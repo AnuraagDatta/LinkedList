@@ -29,15 +29,6 @@ public class LinkedList<T>
         {
             this.data = data;
         }
-
-        public void print()
-        {
-            System.out.print(data+", ");
-            if (next != null)
-            {
-                next.print();
-            }
-        }
     }
 
     //Holds the information from the find function, to be used by the remove(), search(), and index() functions
@@ -276,9 +267,11 @@ public class LinkedList<T>
     public void print()
     {
         System.out.print("[");
-        if (head != null)
+        Node<T> current = head;
+        while (current != null)
         {
-            head.print();
+            System.out.print(current.getData()+", ");
+            current = current.getNext();
         }
         System.out.println("]");
     }
