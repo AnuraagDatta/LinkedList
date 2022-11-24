@@ -1,28 +1,33 @@
-public class LinkedList
+public class LinkedList<T>
 {
-    public class Node //Holds each item in the list
+    public static class Node<T> //Holds each item in the list
     {
-        private Node next;
-        private int data;
+        private Node<T> next;
+        private T data;
 
-        public Node(int data)
+        public Node(T data)
         {
             this.data = data;
         }
 
-        public Node getNext()
+        public Node<T> getNext()
         {
             return next;
         }
 
-        public void setNext(Node next)
+        public void setNext(Node<T> next)
         {
             this.next = next;
         }
 
-        public int getData()
+        public T getData()
         {
             return data;
+        }
+
+        public void setData(T data)
+        {
+            this.data = data;
         }
 
         public void print()
@@ -39,9 +44,9 @@ public class LinkedList
     public class FindInfo
     {
         private int index;
-        private Node current;
+        private Node<T> current;
 
-        public FindInfo(int index, Node current)
+        public FindInfo(int index, Node<T> current)
         {
             this.index = index;
             this.current = current;
@@ -52,36 +57,36 @@ public class LinkedList
             return index;
         }
 
-        public Node getCurrent()
+        public Node<T> getCurrent()
         {
             return current;
         }
     }
 
-    private Node head;
+    private Node<T> head;
 
 
-    public void append(int item)
+    public void append(T item)
     {
         if (isEmpty())
         {//Sets the head of the array to the first item, if the list is empty
-            head = new Node(item);
+            head = new Node<T>(item);
         }
         else
         {//Otherwise, finds the last item in the list, and adds another item to the end
-            Node current = head;
+            Node<T> current = head;
             while (current.getNext() != null)
             {
                 current = current.getNext();
             }
-            current.setNext(new Node(item));
+            current.setNext(new Node<T>(item));
         }
     }
 
-    public void remove(int item) throws IllegalArgumentException
+    public void remove(T item) throws IllegalArgumentException
     {
         FindInfo findInfo = find(item);
-        Node current = findInfo.getCurrent();
+        Node<T> current = findInfo.getCurrent();
         if (findInfo.getIndex() == 0 && current == null)
         {//Checks if it is the first item in the list
             head = head.getNext();
@@ -99,23 +104,23 @@ public class LinkedList
         }
     }
 
-    public boolean search(int item)
+    public boolean search(T item)
     {
         return find(item).getIndex() != -1; //Index of -1 returned when item not found
     }
 
-    public int index(int item)
+    public int index(T item)
     {
         return find(item).getIndex();
     }
 
-    private FindInfo find(int item)
+    private FindInfo find(T item)
     {
         int index = 0;
         FindInfo findInfo;
         if (!isEmpty())
         {
-            Node current = head;
+            Node<T> current = head;
             if (current.getData() == item)
             {//Checks if the first item is the one to be found
                 findInfo = new FindInfo(0, null);
@@ -147,7 +152,7 @@ public class LinkedList
     public int length()
     {
         int length = 0;
-        Node current = head;
+        Node<T> current = head;
         while (current != null)
         {
             current = current.getNext();
@@ -156,19 +161,19 @@ public class LinkedList
         return length;
     }
 
-    public void insert(int pos, int item) throws IndexOutOfBoundsException
+    public void insert(int pos, T item) throws IndexOutOfBoundsException
     {
         if (pos == 0)
         {
-            Node rejoin = head;
-            head = new Node(item);
+            Node<T> rejoin = head;
+            head = new Node<T>(item);
             head.setNext(rejoin);
         }
         else if (pos >= 0 && pos < length())
         {
-            Node current = getBeforePos(pos);
-            Node rejoin = current.getNext();
-            current.setNext(new Node(item));
+            Node<T> current = getBeforePos(pos);
+            Node<T> rejoin = current.getNext();
+            current.setNext(new Node<T>(item));
             current.getNext().setNext(rejoin);
         }
         else
@@ -177,10 +182,10 @@ public class LinkedList
         }
     }
 
-    public int pop()
+    public T pop()
     {
-        Node current = head;
-        Node previous = null;
+        Node<T> current = head;
+        Node<T> previous = null;
         while (current.getNext() != null)
         {
             previous = current;
@@ -197,19 +202,19 @@ public class LinkedList
         return current.getData();
     }
 
-    public int pop(int pos) throws IndexOutOfBoundsException
+    public T pop(int pos) throws IndexOutOfBoundsException
     {
-        int item;
+        T item;
         if (pos == 0)
         {//Checks if item to be removed is the first item.
             item = head.getData();
             head = head.getNext();
         }
-        else if (pos >= 0 && pos < length())
+        else if (pos > 0 && pos < length())
         {
-            Node current = getBeforePos(pos);
+            Node<T> current = getBeforePos(pos);
             item = current.getNext().getData();
-            Node rejoin = current.getNext().getNext();
+            Node<T> rejoin = current.getNext().getNext();
             current.setNext(rejoin);
         }
         else
@@ -219,10 +224,10 @@ public class LinkedList
         return item;
     }
 
-    private Node getBeforePos(int pos)
+    private Node<T> getBeforePos(int pos)
     {
         int currentPos = 0;
-        Node current = head;
+        Node<T> current = head;
         while (currentPos < pos - 1)
         {
             current = current.getNext();
@@ -231,7 +236,7 @@ public class LinkedList
         return current;
     }
 
-    public int get(int pos) throws IndexOutOfBoundsException
+    public T get(int pos) throws IndexOutOfBoundsException
     {
         if (pos >= 0 && pos < length())
         {
@@ -243,12 +248,19 @@ public class LinkedList
         }
     }
 
-    public void set(int pos, int item) throws IndexOutOfBoundsException
+    public void set(int pos, T item) throws IndexOutOfBoundsException
     {
         if (pos >= 0 && pos < length())
         {
-            insert(pos, item);
-            pop(pos + 1);
+            Node<T> toReplace = getBeforePos(pos);
+            if (pos == 0)
+            {
+                toReplace.setData(item);
+            }
+            else
+            {
+                toReplace.getNext().setData(item);
+            }
         }
         else
         {
